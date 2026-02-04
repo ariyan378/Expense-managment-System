@@ -55,4 +55,72 @@ class ExpenseManager :
         self.expense=[]
         self.category = set()
         
-              
+    def add_expense(self,expense):
+        
+        if  not isinstance(expense,Expense):
+            raise TypeError('add_expense expects an Expense object')
+        self.expense.append(expense)
+        self.category.append(expense.category)
+        
+    def remove_expense_by_index(self, index):
+        
+        if index <0 or index >len(self.expense):
+            
+            raise IndexError('Index out of range')
+        
+        removed  = self.expense.pop(index)
+        
+        self._rebuild_category()
+        
+        return removed
+    
+    def _rebuild_category(self):
+        
+        new_set = set()
+        
+        for e in self.expense:
+            new_set.add(e.category)
+        
+        self.category=new_set
+    
+    def list_expense(self):
+        return [e.to_dict() for e in self.expense]
+    
+    def filter_by_category(self,category):
+        return[ e for e in self.expense if e.category.lower()==category.lower()]       
+    
+    def filter_by_month(self, year, month):
+        
+        result=[]
+        
+        y,m,_=e.date_tuple()        
+        for e in self.expense:
+            if y == year and m == month:
+                result.append(e)
+        
+        
+        return result
+    
+    def total_expense(self):
+        
+        total = 0.0
+        
+        for e in self.expense:
+            total+=e.amount 
+            
+            
+        return total
+    
+    def total_by_category (self):
+        
+        total={}  
+        
+        for e in self.expense:
+            if e.category not in total:
+                total[e.category]=0.0
+                
+            total[e.category]+=e.amount
+        
+        return total
+    
+    
